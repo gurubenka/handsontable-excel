@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Grid test</title>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-ui.custom.min.js"></script>
+  <script src="js/jquery.handsontable.full.js"></script>
+  <script src="js/numeral.sv-se.js"></script>
+  <script src="jquery.handsontable-excel.js"></script>
+
+  <link rel="stylesheet" media="screen" href="css/ui-bootstrap/jquery-ui.custom.css">
+  <!-- <link rel="stylesheet" media="screen" href="css/smoothness/jquery-ui.custom.css"> -->
+  <link rel="stylesheet" media="screen" href="css/jquery.handsontable.full.css">
+  <link rel="stylesheet" media="screen" href="css/demo-style.css">
+<script>
+$(function () {
+  $("#tabs").tabs();
+});
+</script>
+</head>
+<body>
+
+<div id="tabs" style="position: absolute;">
+<ul>
+<li><a href="#tabs-1">Spreadsheet</a></li>
+<li><a href="#tabs-2">Info</a></li>
+</ul>
+<div id="tabs-1" style="position: relative;">
+<div id="dataTable"></div>
+<div id="myconsole"></div>
+</div>
+<div id="tabs-2" style="position: relative;">
+<p>This is a demo of the alteration I made to Handsontable to make it
+behave more like a spreadsheet with some math and
+we have some formula evaluation.</p>
+<p>You need to include the file  &lt;script src="jquery.handsontable-excel.js"&gt;&lt;/script&gt;
+in your document, after you have included 'Handsontable' itself, for this to work.</p>
+<p>In order to enable this plugin, you can add 'useFormula: true' to default
+settings in your Handsontable. This rearanges things within Handsontable
+so that the default renderer (if nothing is set explicitly with either 'columns'
+or 'cells') is: 'Handsontable.ExecRenderer'. If you set the type to 'excel'
+in any cell, that enables you to have a formula (similar to excel or libreoffice/openoffice)
+for that cell even without enable the useFormula above.
+Note that this plugin is very beta at the moment. There are several issues with it
+(see below).
+ The new renderer do the following:</p>
+<ul class="help">
+<li>We can have plain text in the cells</li>
+<li>We can have numeric values in the cells</li>
+<li>We can have forced text in the cells so that
+numbers are treated as text. This is done by having
+the first char of the text as a ' (apostroph)</li>
+<li>We can have formulas in the cells with a = as the first char:
+<ul class="help">
+<li>Everything can be wrapped in paranthesis (). It has the highest priority</li>
+<li>Cell references are done by A1 or BD23. If a cell have an other formula, it is reevaluated.
+Beware of circular references as it currently locks the browser!!</li>
+<li>Cell ranges are done with a : as in A1:B23</li>
+<li>Normal operators + - * / are available. * and / have precedience</li>
+<li>You can save the result of a logical operation, = &lt; &gt; &lt;&gt; &gt;= or &lt;=</li>
+<li>Some functions are defined:
+<ul class="help">
+<ll>Sum<li>To sum over a range or each parameter</li>
+<ll>Count<li>To count all numeric values in a range</li>
+<ll>Avg<li>Take average over a range</li>
+<ll>Min<li>Get the minimum value in a range or each parameter</li>
+<ll>Max<li>Get the maximum value in a range or each parameter</li>
+<ll>If<li>If takes 2 or 3 parameters. First parameter must evaluate to a boolean.
+		If that is true, 'IF' have the second parameter as result. If a third
+		exsists and the first parameter evaluates to false, 'IF' will have the third
+		parameter as result, else a null.</li>
+<ll>And<li>Do logical AND over a range or parameters, as in AND(A2>3;C3<0)</li>
+<ll>Or<li>Do logical OR over a range or parameters</li>
+<ll>Xor<li>Do logical XOR over a range or parameters</li>
+<ll>Not<li>Do logical NOT of a parameter</li>
+<ll>Concat<li>Concatenate all ranges and parameters as a string</li>
+</ul>
+</li>
+<li>If you want to have the result as a text message, you encloses the text within a pair
+of " (cite-chars) as in <b>="This text is a string constant"</b> or
+<b>=if(A2=12;"Ja";"Nej")</b> to get either text depending on A2 containing '12' or not.</li>
+</ul></li>
+</ul>
+<p>Known issues:</p>
+<p>When we use the wrong decimal separator (ie. other then '.'), even if we set other
+language definition in numerals.js, it looks like a number on screen, but is actually
+a string, which break formulas for example.
+Always use '.' as decimal separator.</p>
+<p>When we copy a cell that contains a formula, that formula isn't modified to
+compensate for 'relative' cell-addressing. That is, all cell references,
+wether we use '$' or not, is always absolute.</p>
+</div>
+</div>
+<script>
+(function ( $ ) {
+  var container = $("#dataTable").handsontable({
+//    data: data,
+//    startRows: 6,
+//    startCols: 8
+    minRows: 4,
+    minCols: 4,
+    startRows: 5,
+    startCols: 5,
+    rowHeaders: true,
+    colHeaders: true,
+    minSpareRows: 1,
+    minSpareCols: 1,
+    contextMenu: true,
+    manualColumnResize: true,
+    useFormula: true,			// This is the line you are looking for
+/*
+    cells: function (row, col, prop) {
+      var cellProperties = {};
+//      if (row === 0 || container.handsontable('getData')[row][col] === 'readOnly') {
+//        cellProperties.readOnly = true; //make cell read-only if it is first row or the text reads 'readOnly'
+//      }
+
+      // This line makes all cells in your table behave like excel (more or less, mostly less)
+      // Works even if you don't enable 'useFormula' above.
+      cellProperties.type = 'excel';
+      return cellProperties;
+    },
+*/
+    onChange: function (data, source) {
+      if (source === 'loadData') {
+        return; //don't show this change in console
+      }
+      $("#myconsole").text(JSON.stringify(data));
+  }
+
+  });
+})(jQuery);
+</script>
+</body>
+</html>
