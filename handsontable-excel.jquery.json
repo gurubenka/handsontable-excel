@@ -1,0 +1,31 @@
+{
+    "name": "handsontable-excel",
+    "title": "jQuery Spreadsheet",
+    "description": "jQuery plugin to extend the Handsontable to more spreadsheet behaviour.",
+    "keywords": [
+        "handsontable",
+        "spreadsheet"
+    ],
+    "version": "0.1.0",
+    "author": {
+        "name": "B-E Forsgren"
+    },
+    "maintainers": [
+        {
+            "name": "B-E Forsgren"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://opensource.org/licenses/MIT"
+        }
+    ],
+    "bugs": "https://github.com/gurubenka/handsontable-excel/issues",
+    "homepage": "https://github.com/gurubenka/handsontable-excel",
+    "docs": "https://github.com/gurubenka/handsontable-excel",
+    "dependencies": {
+        "jquery": ">=1.9",
+        "handsontable": ">=0.8.14"
+    }
+}
