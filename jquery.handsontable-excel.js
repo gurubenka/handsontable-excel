@@ -231,7 +231,7 @@ var evalFormula = function (instance, formula) {
     else if (c == ':') {
       result = { "type": "range", token: c, next: formulaString.substring(1) };
     }
-    else if (c == ';') {
+    else if (c == ';' || c == ',' ) {
       result = { "type": "param", token: c, next: formulaString.substring(1) };
     }
     else if ((c >= '0' && c <= '9') || c == '.') {
@@ -246,7 +246,7 @@ var evalFormula = function (instance, formula) {
         else if (state == 0)
           val = val * 10 + formulaString.charCodeAt(i) - "0".charCodeAt(0);
         else if (state == 1 && c == '.')
-	  return { "type": 'error', error: 'Bad munber', next: null };
+	  return { "type": 'error', error: 'Bad number', next: null };
 	else if (state == 1) {
 	  div /= 10.0;
 	  part = part + (formulaString.charCodeAt(i) - "0".charCodeAt(0)) * div;
@@ -977,7 +977,12 @@ var evalFormula = function (instance, formula) {
       }
     for (i = 1; i < tokens.length - 1; i++)		// Evaluate * /
       if (tokens[i].type == 'operator' && (tokens[i].token == '*' || tokens[i].token == '/')) {
-	var res = { "type": 'number', "token": 0.0, "next": null };
+	
+    if (tokens[i-1].type == 'error')
+          return tokens[i-1];
+    if (tokens[i+1].type == 'error')
+          return tokens[i+1];
+    var res = { "type": 'number', "token": 0.0, "next": null };
 
 	fixBoolean(tokens, i-1);
 	fixBoolean(tokens, i+1);
@@ -994,7 +999,11 @@ var evalFormula = function (instance, formula) {
       }
     // Unary + and -
     if (tokens[0].type == 'operator' && (tokens[0].token == '-' || tokens[0].token == '+')) {
-	var res = { "type": 'number', "token": 0.0, "next": null };
+	
+    if (tokens[1].type == 'error')
+          return tokens[1];
+    
+    var res = { "type": 'number', "token": 0.0, "next": null };
 
         if (tokens.length > 1) {
 	  fixBoolean(tokens, 1);
@@ -1011,7 +1020,13 @@ var evalFormula = function (instance, formula) {
     }
     for (i = 1; i < tokens.length - 1; i++)	// almost lastly evaluate + -
       if (tokens[i].type == 'operator' && (tokens[i].token == '-' || tokens[i].token == '+')) {
-	var res = { "type": 'number', "token": 0.0, "next": null };
+	
+    if (tokens[i-1].type == 'error')
+          return tokens[i-1];
+    if (tokens[i+1].type == 'error')
+          return tokens[i+1];
+    
+    var res = { "type": 'number', "token": 0.0, "next": null };
 
 	fixBoolean(tokens, i-1);
 	fixBoolean(tokens, i+1);
@@ -1028,7 +1043,13 @@ var evalFormula = function (instance, formula) {
       }
     for (i = 1; i < tokens.length - 1; i++)	// lastly evaluate relation = > < <> <= >=
       if (tokens[i].type == 'relation') {
-	var res = { "type": 'boolean', "token": 0, "next": null };
+	
+    if (tokens[i-1].type == 'error')
+          return tokens[i-1];
+    if (tokens[i+1].type == 'error')
+          return tokens[i+1];
+    
+    var res = { "type": 'boolean', "token": 0, "next": null };
 
 	fixBoolean(tokens,i-1);
 	fixBoolean(tokens,i+1);
