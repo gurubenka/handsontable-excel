@@ -162,6 +162,10 @@ var evalFormula = function (instance, formula) {
     }
     if (val == null || val == '')
       return res;
+    
+    if (typeof val === 'number')
+        val = val.toString();
+    
     c = val[0];
     if (c == "'") {
       res.type = 'text';
@@ -1198,6 +1202,10 @@ Handsontable.ExcelRenderer = function (instance, td, row, col, prop, value, cell
       Handsontable._TextCell.renderer.apply(this, arguments);
       return;
     }
+    
+    if (typeof value === 'number')
+        value = value.toString();
+    
     c = value[0];
     if (c == "'") {		// force value to a string, even things like numeric or formula
       var newValue = value.substring(1);
@@ -1277,7 +1285,7 @@ Handsontable.ExcelCell = {
 // Add mapping of our type
 Handsontable.cellTypes['excel'] = Handsontable.ExcelCell;
 
-Handsontable.PluginHooks.push('afterInit', initExcelCell);
+Handsontable.PluginHooks.add('beforeInit', initExcelCell);
 
 })(jQuery);
 
